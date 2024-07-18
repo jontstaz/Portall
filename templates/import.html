@@ -15,11 +15,29 @@
         <label for="file-content" class="form-label">File Content</label>
         <textarea class="form-control" id="file-content" name="file_content" rows="10" required></textarea>
     </div>
-
     <button type="submit" class="btn btn-primary">Import</button>
 </form>
+<button id="import-docker-btn" class="btn btn-secondary mt-3">Import from Docker</button>
 {% endblock %}
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/core/import.js') }}"></script>
+<script>
+    document.getElementById('import-docker-btn').addEventListener('click', function() {
+        fetch('/import_docker', {
+            method: 'POST',
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Error: ' + error);
+        });
+    });
+</script>
 {% endblock %}

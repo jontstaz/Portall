@@ -13,11 +13,49 @@ from flask import session                       # For storing session data
 
 # Local Imports
 from utils.database import db, Port             # For accessing the database models
+from utils.docker_utils import get_docker_ports
 
 # Create the blueprint
 imports_bp = Blueprint('imports', __name__)
 
 # Import to Database
+
+@imports_bp.route('/import_docker', methods=['POST'])
+def import_docker():
+    try:
+        docker_ports = get_docker_ports()
+        added_count = 0
+        skipped_count = 0
+
+        for port in docker_ports:
+            existing_port = Port.query.filter_by(
+                ip_address=port['ip'],
+                port_number=port['port'],
+                port_protocol=port['port_protocol']
+            ).first()
+
+            if existing_port is None:
+                new_port = Port(
+                    ip_address=port['ip'],
+                    nickname=None,
+                    port_number=port['port'],
+                    description=port['description'],
+                    port_protocol=port['port_protocol'],
+                    order=0  # Adjust as needed
+                )
+                db.session.add(new_port)
+                added_count += 1
+            else:
+                skipped_count += 1
+
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'message': f'Imported {added_count} entries, skipped {skipped_count} existing entries'
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 @imports_bp.route('/import', methods=['GET', 'POST'])
 def import_data():
