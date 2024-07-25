@@ -2,6 +2,7 @@
 {% block content %}
 <h1>Import</h1>
 <div id="notification-area" class="mb-3"></div>
+<button id="import-docker-btn" class="btn btn-secondary mt-3">Auto-import from Docker</button>
 <form id="import-form">
     <div class="mb-3">
         <label for="import-type" class="form-label">Import Type</label>
@@ -17,7 +18,6 @@
     </div>
     <button type="submit" class="btn btn-primary">Import</button>
 </form>
-<button id="import-docker-btn" class="btn btn-secondary mt-3">Import from Docker</button>
 {% endblock %}
 
 {% block scripts %}
